@@ -16,10 +16,24 @@ lex_integer ( int:code:[] ) = if isNumber (head code)
                               else int:code:[]
 lex_integer s = error "Wrong integer format"
 
--- Get the next string literal
+-- Get the next symbol
 lex_symbol :: [String] -> [String]
 lex_symbol [] = [] 
 lex_symbol ( symbol:code:[] ) = [symbol ++ [head code], tail code] 
+
+-- Get the next string literal
+lex_string :: [String] -> [String]
+lex_string all@( string:[] ) = all
+lex_string ( string:(c1:c2:xs):[] ) = if string == "" && c1 == '"'
+                                      then lex_string [ [c1] , c2:xs ]
+                                      else if c1 /= '\\' && c2 == '"'
+                                      then [ string ++ [c1,c2], xs]
+                                      else lex_string [ string ++ [c1], c2:xs ]
+
+-- Get the next character literal
+lex_char :: [String] -> [String]
+lex_char ( "":('\'':c:'\'':xs):[] ) = [ '\'':c:'\'':[], xs ]
+lex_char s = error "Wrong character literal format"
 
 -- Get the next space chunck
 lex_space :: [String] -> [String]
@@ -31,6 +45,8 @@ lex_space ( space:code:[] ) = if isSpace (head code)
 lexemes :: String -> [String]
 lexemes "" = []
 lexemes all@(c:xs)
+    | c == '"'   = ( ( lex_string ("":all:[]) ) !! 0 ) : lexemes ( ( lex_string ("":all:[]) ) !! 1 )
+    | c == '\''  = ( ( lex_char ("":all:[]) ) !! 0 ) : lexemes ( ( lex_char ("":all:[]) ) !! 1 )
     | isAlpha c  = ( ( lex_alpha ("":all:[]) ) !! 0 ) : lexemes ( ( lex_alpha ("":all:[]) ) !! 1 )
     | isNumber c = ( ( lex_integer ("":all:[]) ) !! 0 ) : lexemes ( ( lex_integer ("":all:[]) ) !! 1 )
     | isSpace c  = lexemes  ( lex_space("":all:[]) !! 1 )
