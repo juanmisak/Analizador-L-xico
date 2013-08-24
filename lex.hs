@@ -1,6 +1,9 @@
 import Data.Char
 
--- Get the next alphanumeric chunk
+let tokens_list['auto','break','case','char','const','continue','default','do','double','else','enum','extern','float','for','goto','if',
+    'int','long','register','return','short','signed','sizeof','static','struct','switch','typedef','union','unsigned','void','volatile','while']
+    
+    
 lex_alpha :: [String] -> [String]
 lex_alpha all@( alpha:[] )  = all
 lex_alpha ( alpha:code:[] ) = if isAlphaNum (head code)
@@ -51,3 +54,5 @@ lexemes all@(c:xs)
     | isNumber c = ( ( lex_integer ("":all:[]) ) !! 0 ) : lexemes ( ( lex_integer ("":all:[]) ) !! 1 )
     | isSpace c  = lexemes  ( lex_space("":all:[]) !! 1 )
     | otherwise  = ( ( lex_symbol ("":all:[]) ) !! 0 ) : lexemes ( ( lex_symbol ("":all:[]) ) !! 1 )
+
+tokens :: [String]->[(String,String)]
