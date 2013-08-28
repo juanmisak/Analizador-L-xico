@@ -60,6 +60,15 @@ lexemes all@(c:xs)
     
 -- Is a keyword? yes, push at tokens_list / no, do nothing
 tokens :: [String]->[(String,String)]
-	  if any (==head lexemes) tokens_list
-	  then let tokens_final_list = tokens_list_temp ++ (head,keyword)
-	  else tokens  tail lexemes
+tokens [] = []
+tokens [String]	= if any (==head lexemes) tokens_list
+				then let tokens_final_list = tokens_final_list ++ (head lexemes,keyword)
+				else tokens  tail lexemes
+	  
+				else if head lexemes == ";"
+				then let tokens_final_list = tokens_final_list ++ (head lexemes,semicolon)
+				else tokens  tail lexemes 
+				
+				else if head lexemes == ":"
+				then let tokens_final_list = tokens_final_list ++ (head lexemes,colon)
+				else tokens  tail lexemes 
