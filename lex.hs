@@ -55,33 +55,7 @@ lexemes all@(c:xs)
     | isSpace c  = lexemes  ( lex_space("":all:[]) !! 1 )
     | otherwise  = ( ( lex_symbol ("":all:[]) ) !! 0 ) : lexemes ( ( lex_symbol ("":all:[]) ) !! 1 )
 	
-tokens :: [String]->[(String,String)]
-tokens [] = [("EOF","EOF")]
-tokens (x:xs) = if any (== x) ["auto","break","case","char","const","continue","default","do","double","else","enum","extern","float","for","goto","if","int","long","register","return","short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void","volatile"] 
-				then [(x,"keyword")] ++ tokens xs
-				
-				else if any (== x) ["!","=",">","<","&","|"]
-				then [(x,"logic operator")] ++ tokens xs
-				
-				else if any (== x) ["+","-","*","="]
-				then [(x,"operator")] ++ tokens xs
 
-				else if  x == ";"
-				then [(x,"semicolon")] ++ tokens xs
-
-				else if  x == ":"
-				then [(x,"colon")] ++ tokens xs 
-
-				else if  x == ","
-				then [(x,"coma")] ++ tokens xs 
-
-				else if x  == "{" 
-				then [(x,"open brackets")] ++ tokens xs
-				
-				else if x == "}" 
-				then [(x,"close brackets")] ++ tokens xs				
-				
-				else tokens xs
 
 				
 tokens :: [String]->[(String,String)]
@@ -95,4 +69,4 @@ tokens all@(x:xs)
 	| x == "," = [(x,"coma")] ++ tokens xs
 	| x == "{" = [(x,"open brackets")] ++ tokens xs
 	| x == "}" = [(x,"close brackets")] ++ tokens xs
-	| otherwise	 tokens xs
+	| otherwise	= tokens xs
