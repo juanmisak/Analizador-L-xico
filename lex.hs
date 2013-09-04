@@ -1,7 +1,7 @@
 import Data.Char
 import Data.List
 
-    
+-- Get the next string literal
 lex_alpha :: [String] -> [String]
 lex_alpha all@( alpha:[] )  = all
 lex_alpha ( alpha:code:[] ) = if isAlphaNum (head code)
@@ -44,6 +44,13 @@ lex_space all@( space:[] ) = all
 lex_space ( space:code:[] ) = if isSpace (head code)
                               then lex_space [ space ++ [head code], tail code ]
                               else space:code:[]
+							  
+display :: [(String,String)] -> IO()
+display zs = sequence_ [putStrLn ( a ++ ", " ++ b ) | (a,b) <- zs]
+
+main = do
+	content <- getContents
+	display ( tokens ( lexemes content ) )
 
 lexemes :: String -> [String]
 lexemes "" = []
