@@ -1,6 +1,11 @@
 import Data.Char
 import Data.List
 
+main = do
+	content <- getContents
+	display ( tokens ( lexemes content ) )
+
+
 -- Get the next string literal
 lex_alpha :: [String] -> [String]
 lex_alpha all@( alpha:[] )  = all
@@ -8,6 +13,7 @@ lex_alpha ( alpha:code:[] ) = if isAlphaNum (head code)
                               then lex_alpha [ alpha ++ [head code] , tail code ]
                               else alpha:code:[]
 lex_alpha s = error "Wrong alphanum format"
+
 
 -- Get the next integer chunk
 lex_integer :: [String] -> [String]
@@ -17,10 +23,12 @@ lex_integer ( int:code:[] ) = if isNumber (head code)
                               else int:code:[]
 lex_integer s = error "Wrong integer format"
 
+
 -- Get the next symbol
 lex_symbol :: [String] -> [String]
 lex_symbol [] = [] 
 lex_symbol ( symbol:code:[] ) = [symbol ++ [head code], tail code] 
+
 
 -- Get the next string literal
 lex_string :: [String] -> [String]
@@ -32,7 +40,6 @@ lex_string ( string:(c1:c2:xs):[] ) = if string == "" && c1 == '"'
                                       else lex_string [ string ++ [c1], c2:xs ]
 									  
 									  
-
 -- Get the next character literal
 lex_char :: [String] -> [String]
 lex_char ( "":('\'':c:'\'':xs):[] ) = [ '\'':c:'\'':[], xs ]
@@ -48,9 +55,6 @@ lex_space ( space:code:[] ) = if isSpace (head code)
 display :: [(String,String)] -> IO()
 display zs = sequence_ [putStrLn ( a ++ ", " ++ b ) | (a,b) <- zs]
 
-main = do
-	content <- getContents
-	display ( tokens ( lexemes content ) )
 
 lexemes :: String -> [String]
 lexemes "" = []
@@ -76,4 +80,4 @@ tokens all@(x:xs)
 	| x == "," = [(x,"coma")] ++ tokens xs
 	| x == "{" = [(x,"open brackets")] ++ tokens xs
 	| x == "}" = [(x,"close brackets")] ++ tokens xs
-	| otherwise	= tokens xs
+	| otherwise =[(x,"identifier ")] ++ tokens xs
