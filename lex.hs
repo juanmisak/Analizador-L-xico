@@ -73,11 +73,18 @@ tokens :: [String]->[(String,String)]
 tokens [] = [("EOF","EOF")]
 tokens all@(x:xs) 
 	| any (== x) ["auto","break","case","char","const","continue","default","do","double","else","enum","extern","float","for","goto","if","int","long","register","return","short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void","volatile"] = [(x,"keyword")] ++ tokens xs
-	| any (== x) ["!","=",">","<","&","|"] = [(x,"logic operator")] ++ tokens xs
-	| any (== x) ["+","-","*","="] = [(x,"operator")] ++ tokens xs
+	| any (== x) ["!","==",">","<","&","|"] = [(x,"logic operator")] ++ tokens xs
+	| any (== x) ["~","@","%","^","&","*","-","+","=","|","/",":","?"] = [(x,"operator")] ++ tokens xs
+	| head x == '"' = [(x,"string literal")] ++ tokens xs
+	| head x == '\'' = [(x,"character literal")] ++ tokens xs
+	| isNumber (head x) = [(x,"integer constant")] ++ tokens xs
 	| x == ";" = [(x,"semicolon")] ++ tokens xs
 	| x == ":" = [(x,"colon")] ++ tokens xs 
 	| x == "," = [(x,"coma")] ++ tokens xs
-	| x == "{" = [(x,"open brackets")] ++ tokens xs
-	| x == "}" = [(x,"close brackets")] ++ tokens xs
+	| x == "{" = [(x,"opening braces")] ++ tokens xs
+	| x == "}" = [(x,"closing braces")] ++ tokens xs
+	| x == "[" = [(x,"opening brackets")] ++ tokens xs
+	| x == "]" = [(x,"closing brackets")] ++ tokens xs
+	| x == "(" = [(x,"opening parentheses")] ++ tokens xs
+	| x == ")" = [(x,"closing parentheses")] ++ tokens xs
 	| otherwise =[(x,"identifier ")] ++ tokens xs
